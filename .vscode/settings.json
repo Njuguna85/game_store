@@ -2,5 +2,10 @@
     "cSpell.words": [
         "esbuild",
         "pento"
+    ],
+    "cSpell.language": "en-GB,en,lorem",
+    "cSpell.enableFiletypes": [
+        "eex",
+        "html-eex"
     ]
 }
