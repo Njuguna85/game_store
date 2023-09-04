@@ -28,6 +28,15 @@ defmodule PentoWeb.ProductLive.FormComponent do
           <.label>Image</.label>
           <.live_file_input upload={@uploads.image} />
         </div>
+        <%= for image <- @uploads.image.entries do %>
+          <div class="mt-4">
+            <.live_img_preview entry={image} width="60" />
+          </div>
+          <progress value={image.progress} max="100" />
+        <% end %>
+        <%= for err <- upload_errors(@uploads.image) do %>
+          <.error><%= err %></.error>
+        <% end %>
         <:actions>
           <.button phx-disable-with="Saving...">Save Product</.button>
         </:actions>
@@ -67,6 +76,8 @@ defmodule PentoWeb.ProductLive.FormComponent do
   end
 
   defp save_product(socket, :edit, product_params) do
+    product_params = params_with_image(socket, product_params)
+
     case Catalog.update_product(socket.assigns.product, product_params) do
       {:ok, product} ->
         notify_parent({:saved, product})
@@ -82,6 +93,8 @@ defmodule PentoWeb.ProductLive.FormComponent do
   end
 
   defp save_product(socket, :new, product_params) do
+    product_params = params_with_image(socket, product_params)
+
     case Catalog.create_product(product_params) do
       {:ok, product} ->
         notify_parent({:saved, product})
@@ -94,6 +107,27 @@ defmodule PentoWeb.ProductLive.FormComponent do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
     end
+  end
+
+  # consume_uploaded_entries iterates through the list of entries
+  # in socket.assigns.uploads.image.entries and process each one with a
+  # custom callback function upload_static_file
+  def params_with_image(socket, params) do
+    path =
+      socket
+      |> consume_uploaded_entries(:image, &upload_static_file/2)
+      |> List.first()
+
+    Map.put(params, "image_upload", path)
+  end
+
+  defp upload_static_file(%{path: path}, _entry) do
+    filename = Path.basename(path)
+    dest = Path.join("priv/static/images", filename)
+
+    File.cp!(path, dest)
+
+    {:ok, ~p"/images/#{Path.basename(dest)}"}
   end
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
