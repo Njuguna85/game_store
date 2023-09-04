@@ -1,8 +1,8 @@
 defmodule Pento.Promo do
   alias Pento.Promo.Recipient
 
-  # creates a recipient changeset
-  # the public changeset api below will
+  # creates a recipient changeset.
+  # The public changeset api below will
   # only be activated if a recipient struct is passed
   # with some attributes or not
   def change_recipient(%Recipient{} = recipient, attrs \\ %{}) do

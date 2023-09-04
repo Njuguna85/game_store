@@ -11,7 +11,7 @@ defmodule PentoWeb.PromoLive do
      |> assign_changeset()}
   end
 
-  # add a recipient struct in the socket
+  # add a Recipient struct in the socket
   def assign_recipient(socket) do
     socket
     |> assign(:recipient, %Recipient{})
@@ -24,25 +24,30 @@ defmodule PentoWeb.PromoLive do
     |> assign(:changeset, to_form(Promo.change_recipient(recipient)))
   end
 
-  #  handle_event accepts an event, the params and a socket
+  # handle_event accepts an event, the params and a socket
   # make sure the event is validate, and the params are of recipient
   # key in the dictionary, destructure the socket to get the recipient struct
   # remember the promo change_recipient creates a recipient changeset
   # and will only accept a recipient struct
   # we add the validate action to the changeset which is a signal that instructs phoenix to display errors
-  def handle_event("validate", %{"recipient" => recipient_params}, %{
-        assigns: %{recipient: recipient} = socket
-      }) do
+  def handle_event(
+        "validate",
+        %{"recipient" => recipient_params},
+        %{
+          assigns: %{recipient: recipient}
+        } = socket
+      ) do
     changeset =
       recipient
       |> Promo.change_recipient(recipient_params)
       |> Map.put(:action, :validate)
 
-    IO.inspect(socket, label: "socket")
-    IO.inspect(recipient, label: "recipient")
-
     {:noreply,
      socket
      |> assign(:changeset, to_form(changeset))}
+  end
+
+  def handle_event("save", %{"recipient" => recipient_params}, socket) do
+    :timer.sleep(1000)
   end
 end
