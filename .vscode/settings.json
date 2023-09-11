@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
         "esbuild",
-        "pento"
+        "pento",
+        "tbody",
+        "thead"
     ],
     "cSpell.language": "en-GB,en,lorem",
     "cSpell.enableFiletypes": [
