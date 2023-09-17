@@ -9,6 +9,7 @@ defmodule PentoWeb.SurveyLive do
   alias __MODULE__.Component
 
   use PentoWeb, :live_view
+
   # before the mount callback fires, the on_mount function will fire
   # thus loading a user
   # After an on_mount callback runs and the mount finishes, the live view
@@ -42,5 +43,19 @@ defmodule PentoWeb.SurveyLive do
     socket
     |> put_flash(:info, "Demographic created successfully")
     |> assign(:demographic, demographic)
+  end
+
+  def handle_info({:created_rating, updated_product, product_index}, socket) do
+    {:noreply, handle_rating_created(socket, updated_product, product_index)}
+  end
+
+  def handle_rating_created(
+        %{assigns: %{products: products}} = socket,
+        updated_product,
+        product_index
+      ) do
+    socket
+    |> put_flash(:info, "Rating submitted successfully")
+    |> assign(:products, List.replace_at(products, product_index, updated_product))
   end
 end
