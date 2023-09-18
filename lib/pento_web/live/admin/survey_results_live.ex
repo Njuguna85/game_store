@@ -13,23 +13,28 @@ defmodule PentoWeb.Admin.SurveyResultsLive do
      |> assign_chart_svg()}
   end
 
-  def assign_products_with_average_ratings(socket) do
+  defp assign_products_with_average_ratings(socket) do
     socket
     |> assign(
-      :product_with_average_ratings,
+      :products_with_average_ratings,
       Catalog.products_with_average_ratings()
     )
   end
 
-  def assign_dataset(
-        %{
-          assigns: %{
-            products_with_average_ratings: products_with_average_ratings
-          }
-        } = socket
-      ) do
+  defp assign_dataset(
+         %{
+           assigns: %{
+             products_with_average_ratings: products_with_average_ratings
+           }
+         } = socket
+       ) do
+    IO.puts("IN assign datasets")
+
     socket
-    |> assign(:dataset, make_bar_chart_dataset(products_with_average_ratings))
+    |> assign(
+      :dataset,
+      make_bar_chart_dataset(products_with_average_ratings)
+    )
   end
 
   def make_bar_chart_dataset(data) do
@@ -52,7 +57,7 @@ defmodule PentoWeb.Admin.SurveyResultsLive do
 
   defp render_bar_chart(chart) do
     Plot.new(500, 400, chart)
-    |> Plot.title(title(), subtitle())
+    |> Plot.titles(title(), subtitle())
     |> Plot.axis_labels(x_axis(), y_axis())
     |> Plot.to_svg()
   end
