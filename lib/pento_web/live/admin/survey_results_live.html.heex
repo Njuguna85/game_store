@@ -3,9 +3,10 @@
 
   <div id="survey-results-component">
     <div class="container">
-      <div>
+      <%!-- <div>
         <.form
-          for={:gender_filter}
+          for={%{}}
+          as={:gender_filter}
           phx-change="gender_filter"
           phx-target={@myself}
           id="gender-form"
@@ -19,10 +20,11 @@
             <% end %>
           </select>
         </.form>
-      </div>
+      </div> --%>
       <div>
         <.form
-          for={:age_group_filter}
+          for={%{}}
+          as={:age_group_filter}
           phx-change="age_group_filter"
           phx-target={@myself}
           id="age-group-form"
