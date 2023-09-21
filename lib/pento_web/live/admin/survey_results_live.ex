@@ -9,31 +9,90 @@ defmodule PentoWeb.Admin.SurveyResultsLive do
      socket
      |> assign(assigns)
      |> assign_age_group_filter()
+     |> assign_gender_filter()
      |> assign_products_with_average_ratings()
      |> assign_dataset()
      |> assign_chart()
      |> assign_chart_svg()}
   end
 
+  # if the key value pair is present in the socket, then we match
+  #  the set value of that key in the socket assigns to the existing value
+  def assign_age_group_filter(%{assigns: %{age_group_filter: age_group_filter}} = socket) do
+    assign(socket, age_group_filter, age_group_filter)
+  end
+
+  # otherwise set it to all
   def assign_age_group_filter(socket) do
     socket
     |> assign(:age_group_filter, "all")
   end
 
+  def assign_gender_filter(%{assigns: %{gender_filter: gender_filter}} = socket) do
+    assign(socket, :gender_filter, gender_filter)
+  end
+
+  def assign_gender_filter(socket) do
+    assign(socket, :gender_filter, "all")
+  end
+
+  def handle_event(event, params, socket) do
+    case event do
+      "age_group_filter" -> handle_age_group_filter_event(params, socket)
+      "gender_filter" -> handle_gender_filter_event(params, socket)
+      _ -> {:noreply, socket}
+    end
+  end
+
+  def handle_age_group_filter_event(%{"age_group_filter" => age_group_filter}, socket) do
+    {:noreply,
+     socket
+     |> assign_age_group_filter(age_group_filter)
+     |> assign_products_with_average_ratings()
+     |> assign_dataset()
+     |> assign_chart()
+     |> assign_chart_svg()}
+  end
+
+  def assign_age_group_filter(socket, age_group_filter) do
+    assign(socket, :age_group_filter, age_group_filter)
+  end
+
+  def handle_gender_filter_event(%{"gender_filter" => gender_filter}, socket) do
+    {:noreply,
+     socket
+     |> assign_gender_filter(gender_filter)
+     |> assign_products_with_average_ratings()
+     |> assign_dataset()
+     |> assign_chart()
+     |> assign_chart_svg()}
+  end
+
+  def assign_gender_filter(socket, gender_filter) do
+    assign(socket, :gender_filter, gender_filter)
+  end
+
+  # the assigns should have the age_group_filter and gender_filter
   defp assign_products_with_average_ratings(
-         %{assigns: %{age_group_filter: age_group_filter}} = socket
+         %{assigns: %{age_group_filter: age_group_filter, gender_filter: gender_filter}} = socket
        ) do
     socket
     |> assign(
       :products_with_average_ratings,
-      get_products_with_average_ratings(%{age_group_filter: age_group_filter})
+      get_products_with_average_ratings(%{
+        age_group_filter: age_group_filter,
+        gender_filter: gender_filter
+      })
     )
   end
 
-  defp get_products_with_average_ratings(filter) do
-    case Catalog.products_with_average_ratings(filter) do
-      [] -> Catalog.products_with_zero_ratings()
-      products -> products
+  defp get_products_with_average_ratings(filters) do
+    case Catalog.products_with_average_ratings(filters) do
+      [] ->
+        Catalog.products_with_zero_ratings()
+
+      products ->
+        products
     end
   end
 
@@ -78,57 +137,5 @@ defmodule PentoWeb.Admin.SurveyResultsLive do
 
   defp y_axis do
     "stars"
-  end
-
-  # def handle_event("age_group_filter", %{"age_group_filter" => age_group_filter}, socket) do
-  #   {:noreply,
-  #    socket
-  #    |> assign_age_group_filter(age_group_filter)
-  #    |> assign_products_with_average_ratings()
-  #    |> assign_dataset()
-  #    |> assign_chart()
-  #    |> assign_chart_svg()}
-  # end
-
-  def assign_age_group_filter(socket, age_group_filter) do
-    assign(socket, :age_group_filter, age_group_filter)
-  end
-
-  # def handle_event("gender_filter", %{"gender_filter" => gender_filter}, socket) do
-  #   {:noreply,
-  #    socket
-  #    |> assign_gender_filter(gender_filter)}
-  # end
-
-  def handle_event(event, params, socket) do
-    case event do
-      "age_group_filter" -> handle_age_group_filter_event(params, socket)
-      "gender_filter" -> handle_gender_filter_event(params, socket)
-      _ -> {:noreply, socket}
-    end
-  end
-
-  def handle_age_group_filter_event(%{"age_group_filter" => age_group_filter}, socket) do
-    {:noreply,
-     socket
-     |> assign_age_group_filter(age_group_filter)
-     |> assign_products_with_average_ratings()
-     |> assign_dataset()
-     |> assign_chart()
-     |> assign_chart_svg()}
-  end
-
-  def handle_gender_filter_event(%{"gender_filter" => gender_filter}, socket) do
-    {:noreply,
-     socket
-     |> assign_gender_filter(gender_filter)}
-  end
-
-  def assign_gender_filter(socket) do
-    assign(socket, :gender_filter, "all")
-  end
-
-  def assign_gender_filter(socket, gender_filter) do
-    assign(socket, :gender_filter, gender_filter)
   end
 end

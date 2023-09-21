@@ -25,6 +25,7 @@ defmodule Pento.Catalog.Product.Query do
     |> average_ratings
   end
 
+  # product join ratings
   def join_ratings(query) do
     query
     |> join(:inner, [p], r in Rating, on: r.product_id == p.id)
@@ -36,15 +37,16 @@ defmodule Pento.Catalog.Product.Query do
     |> select([p, r], {p.name, fragment("?::float", avg(r.stars))})
   end
 
+  # products with ratings to join users
   # the list represents tables in the resulting join
   # in ecto its customary to use a single letter to refer to associated tables
-  # [products, results]
+  # [products, ratings]
   def join_users(query \\ base()) do
     query
     |> join(:left, [p, r], u in User, on: r.user_id == u.id)
   end
 
-  # this query returns [products, results, users, demographics]
+  # this query returns [products, ratings, users, demographics]
   def join_demographics(query \\ base()) do
     query
     |> join(:left, [p, r, u, d], d in Demographic, on: d.user_id == u.id)
@@ -99,5 +101,19 @@ defmodule Pento.Catalog.Product.Query do
   def with_zero_ratings(query \\ base()) do
     query
     |> select([p], {p.name, 0})
+  end
+
+  def filter_by_gender(query \\ base(), filter) do
+    query
+    |> apply_gender_filter(filter)
+  end
+
+  defp apply_gender_filter(query, "all") do
+    query
+  end
+
+  defp apply_gender_filter(query, filter) do
+    query
+    |> where([p, r, u, d], d.gender == ^filter)
   end
 end

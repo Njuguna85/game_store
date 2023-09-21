@@ -1,8 +1,8 @@
 defmodule PentoWeb.SurveyLive do
-  alias Pento.Survey
-  alias PentoWeb.DemographicLive
-  alias PentoWeb.RatingLive
-  alias Pento.Catalog
+  alias Pento.{Catalog, Survey}
+  alias PentoWeb.{DemographicLive, RatingLive, Endpoint}
+
+  @survey_results_topic "survey_results"
 
   # add the SurveyLive function component
   # now we can use this in the SurveyLive template
@@ -54,6 +54,8 @@ defmodule PentoWeb.SurveyLive do
         updated_product,
         product_index
       ) do
+    Endpoint.broadcast(@survey_results_topic, "rating_created", %{})
+
     socket
     |> put_flash(:info, "Rating submitted successfully")
     |> assign(:products, List.replace_at(products, product_index, updated_product))

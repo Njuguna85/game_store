@@ -84,7 +84,7 @@
   padding: 20px;
 }
 #survey-results-component {
-  /* border: 1px solid; */
+  border: 1px solid;
 }
 #survey-results-chart {
   padding-right: 200px;
