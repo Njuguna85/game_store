@@ -2,7 +2,7 @@ defmodule PentoWeb.GameLive.Component do
   use Phoenix.Component
 
   alias Pento.Game.Pentomino
-  # import PentoWeb.GameLive.Colors
+  import PentoWeb.GameLive.Colors
 
   attr :x, :integer, required: true
   attr :y, :integer, required: true
@@ -64,5 +64,41 @@ defmodule PentoWeb.GameLive.Component do
       <.point x={x} y={y} fill={@fill} name={@name} />
     <% end %>
     """
+  end
+
+  attr :shape_names, :list, required: true
+  attr :completed_shape_names, :list, default: []
+
+  def palette(assigns) do
+    ~H"""
+    <div id="palette">
+      <.canvas view_box="0 0 500 125">
+        <%= for shape <- palette_shapes(@shape_names) do %>
+          <.shape
+            points={shape.points}
+            fill={color(shape.color, false, shape.name in @completed_shape_names)}
+            name={shape.name}
+          />
+        <% end %>
+      </.canvas>
+    </div>
+    """
+  end
+
+  defp palette_shapes(names) do
+    names
+    |> Enum.with_index()
+    |> Enum.map(&place_pento/1)
+  end
+
+  defp place_pento({name, index}) do
+    Pentomino.new(name: name, location: location(index))
+    |> Pentomino.to_shape()
+  end
+
+  defp location(i) do
+    x = rem(i, 6) * 4 + 3
+    y = div(i, 6) * 5 + 3
+    {x, y}
   end
 end

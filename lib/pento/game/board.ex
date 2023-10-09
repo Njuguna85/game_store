@@ -23,8 +23,8 @@ defmodule Pento.Game.Board do
   def new(:medium), do: new(:all, rect(12, 5))
   def new(:default), do: new(:all, rect(10, 6))
 
-  # create a board struct with a palette, points and correct
-  # default values
+  # create a board struct with a palette, points and
+  # correct default values
   def new(palette, points) do
     %__MODULE__{palette: palette(palette), points: points}
   end
@@ -35,11 +35,12 @@ defmodule Pento.Game.Board do
     for x <- 1..x, y <- 1..y, do: {x, y}
   end
 
+  # a palette defines the list of shapes allowed in a puzzle
   defp palette(:all), do: [:i, :l, :y, :n, :p, :w, :u, :v, :s, :f, :x, :t]
   defp palette(:small), do: [:u, :v, :p]
 
   # create a new shape struct with a default color of :purple, name
-  # of :board and the list of points that comprise the puzzel board
+  # of :board and the list of points that comprise the puzzle board
   def to_shape(board) do
     Shape.__struct__(color: :purple, name: :board, points: board.points)
   end

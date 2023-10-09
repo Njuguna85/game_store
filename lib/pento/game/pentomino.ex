@@ -15,6 +15,8 @@ defmodule Pento.Game.Pentomino do
   # hold the state of the pentomino as we transform the state from user
   defstruct name: :i, rotation: 0, reflected: false, location: @default_location
 
+  # fields should be a shape name and location
+  # returns a pentomino struct
   def new(fields \\ []), do: __struct__(fields)
 
   # will take an argument of a pentomino and update its rotation attribute
