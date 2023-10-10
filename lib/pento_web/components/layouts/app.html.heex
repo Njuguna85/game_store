@@ -14,6 +14,7 @@
     </div>
     <div class="flex items-center gap-4">
       <%= if @current_user do %>
+        <.link href={~p"/play"}>Play</.link>
         <.link href={~p"/products"}>Products</.link>
         <.link href={~p"/survey"}>Survey</.link>
         <.link href={~p"/admin/dashboard"}>Dashboard</.link>
