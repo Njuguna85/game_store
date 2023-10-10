@@ -38,6 +38,7 @@ defmodule Pento.Game.Board do
   # a palette defines the list of shapes allowed in a puzzle
   defp palette(:all), do: [:i, :l, :y, :n, :p, :w, :u, :v, :s, :f, :x, :t]
   defp palette(:small), do: [:u, :v, :p]
+  defp palette(:medium), do: [:t, :y, :l, :p, :n, :v, :u]
 
   # create a new shape struct with a default color of :purple, name
   # of :board and the list of points that comprise the puzzle board
@@ -76,4 +77,71 @@ defmodule Pento.Game.Board do
 
   def active?(%{active_pento: %{name: shape_name}}, shape_name), do: true
   def active?(_board, _shape_name), do: false
+
+  # ignore the user action as the clicks are on the board
+  def pick(board, :board), do: board
+
+  # user click on pentomino, but an active pentomino is already selected, if they click on the active one, we release it.
+  def pick(%{active_pento: pento} = board, shape_name) when not is_nil(pento) do
+    if pento.name == shape_name do
+      %{board | active_pento: nil}
+    else
+      board
+    end
+  end
+
+  # user picks up a pentomino, it might be one that has already been solved, if so, we remove it from the completed list and let them place it again. if not, we make it the active pentomino
+  def pick(board, shape_name) do
+    active =
+      board.completed_pentos
+      |> Enum.find(&(&1.name == shape_name))
+      |> Kernel.||(new_pento(board, shape_name))
+
+    completed = Enum.filter(board.completed_pentos, &(&1.name != shape_name))
+
+    %{board | active_pento: active, completed_pentos: completed}
+  end
+
+  defp new_pento(board, shape_name) do
+    Pentomino.new(name: shape_name, location: midpoints(board))
+  end
+
+  defp midpoints(board) do
+    {xs, ys} = Enum.unzip(board.points)
+    {midpoint(xs), midpoints(ys)}
+  end
+
+  defp midpoint(i), do: round(Enum.max(i) / 2.0)
+
+  def legal_drop?(%{active_pento: pento}) when is_nil(pento), do: false
+
+  def legal_drop?(%{active_pento: pento, points: board_points} = board) do
+    points_on_board =
+      Pentomino.to_shape(pento).points
+      |> Enum.all?(fn point -> point in board_points end)
+
+    no_overlapping_pentos = !Enum.any?(board.completed_pentos, &overlapping?(pento, &1))
+
+    points_on_board and no_overlapping_pentos
+  end
+
+  def legal_move?(%{active_pento: pento, points: points} = _board) do
+    pento.location in points
+  end
+
+  def overlapping?(pento1, pento2) do
+    {p1, p2} = {to_shape(pento1).points, to_shape(pento2).points}
+    Enum.count(p1 -- p2) != 5
+  end
+
+  # drop the active pento
+
+  # there is no active pento to drop
+  def drop(%{active_pento: nil} = board), do: board
+
+  def drop(%{active_pento: pento} = board) do
+    board
+    |> Map.put(:active_pento, nil)
+    |> Map.put(:completed_pentos, [pento | board.completed_pentos])
+  end
 end

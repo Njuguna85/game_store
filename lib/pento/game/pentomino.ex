@@ -29,7 +29,7 @@ defmodule Pento.Game.Pentomino do
   # takes in a pentomino and return a new struct with updates :reflected value
   # which is opposite of the present value
   # if the pentomino is not flipped, reflected will be true
-  defp flip(%{reflected: reflection} = p) do
+  def flip(%{reflected: reflection} = p) do
     %{p | reflected: not reflection}
   end
 
