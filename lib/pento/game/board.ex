@@ -15,18 +15,27 @@ defmodule Pento.Game.Board do
             palette: [],
             points: []
 
-  def puzzles(), do: ~w[default wide widest medium tiny]a
+  def puzzles(), do: ~w[tiny small ball donut default wide widest medium]a
 
   def new(:tiny), do: new(:small, rect(5, 3))
   def new(:widest), do: new(:all, rect(20, 3))
   def new(:wide), do: new(:all, rect(15, 4))
   def new(:medium), do: new(:all, rect(12, 5))
   def new(:default), do: new(:all, rect(10, 6))
+  def new(:small), do: new(:medium, rect(7, 5))
+
+  def new(:donut) do
+    new(:all, rect(8, 8), for(x <- 4..5, y <- 4..5, do: {x, y}))
+  end
+
+  def new(:ball) do
+    new(:all, rect(8, 8), for(x <- [1, 8], y <- [1, 8], do: {x, y}))
+  end
 
   # create a board struct with a palette, points and
   # correct default values
-  def new(palette, points) do
-    %__MODULE__{palette: palette(palette), points: points}
+  def new(palette, points, hole \\ []) do
+    %__MODULE__{palette: palette(palette), points: points -- hole}
   end
 
   # takes a board width and height and returns a
@@ -108,7 +117,7 @@ defmodule Pento.Game.Board do
 
   defp midpoints(board) do
     {xs, ys} = Enum.unzip(board.points)
-    {midpoint(xs), midpoints(ys)}
+    {midpoint(xs), midpoint(ys)}
   end
 
   defp midpoint(i), do: round(Enum.max(i) / 2.0)

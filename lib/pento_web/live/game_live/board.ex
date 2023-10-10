@@ -1,5 +1,6 @@
 defmodule PentoWeb.GameLive.Board do
   use PentoWeb, :live_component
+
   alias Pento.Game.{Board}
   alias Pento.Game
   import PentoWeb.GameLive.{Colors, Component}
