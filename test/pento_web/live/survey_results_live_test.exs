@@ -143,9 +143,9 @@ defmodule PentoWeb.SurveyResultsLiveTest do
       socket
       |> SurveyResultsLive.assign_age_group_filter()
       |> assert_keys(:age_group_filter, "all")
-      |> update_socket(:age_group_filter, "18 and under")
+      |> update_socket(:age_group_filter, "18_and_under")
       |> SurveyResultsLive.assign_age_group_filter()
-      |> assert_keys(:age_group_filter, "18 and under")
+      |> assert_keys(:age_group_filter, "18_and_under")
       |> SurveyResultsLive.assign_gender_filter()
       |> SurveyResultsLive.assign_products_with_average_ratings()
       |> assert_keys(:products_with_average_ratings, [{"Test Game", 2.0}])
