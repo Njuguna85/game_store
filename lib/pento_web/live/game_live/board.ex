@@ -63,13 +63,13 @@ defmodule PentoWeb.GameLive.Board do
     {:noreply, socket |> pick(name) |> assign_shapes}
   end
 
-  def handle_event("key", %{"key" => key}, socket) do
-    {:noreply, socket |> do_key(key) |> assign_shapes}
-  end
-
   defp pick(socket, name) do
     shape_name = String.to_existing_atom(name)
     update(socket, :board, &Board.pick(&1, shape_name))
+  end
+
+  def handle_event("key", %{"key" => key}, socket) do
+    {:noreply, socket |> do_key(key) |> assign_shapes}
   end
 
   def do_key(socket, key) do

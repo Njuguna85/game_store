@@ -42,7 +42,7 @@ defmodule PentoWeb.GameLive do
 
   def help_page(assigns) do
     ~H"""
-    <div id="info" hidden class="fixed hidden bg-white mx-4 border border-2">
+    <div id="info" hidden class="fixed hidden bg-white mx-4 border-2">
       <ul class="mx-8 list-disc">
         <li>Click on a pento to pick it up</li>
         <li>Drop a pento with a space</li>

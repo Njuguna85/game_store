@@ -5,7 +5,7 @@ config :pento, Pento.Repo,
   username: "postgres",
   password: "123tothe4",
   hostname: "localhost",
-  database: "pento_dev",
+  database: "pento_dev_v1",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -77,3 +77,5 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+config :phoenix_live_view, debug_heex_annotations: true
